@@ -50,10 +50,27 @@ def draw_alpha_screen():
     pygame.draw.rect(shape, 'white', shape.get_rect())
     screen.blit(shape, rect)
 
+def draw_help_box():
+    rect = (500, 25, 190, 100)
+    shape = pygame.Surface(pygame.Rect(rect).size)
+    shape.set_alpha(100)
+    pygame.draw.rect(shape, (200,250,250), shape.get_rect())
+    screen.blit(shape, rect)
+    text = pygame.font.Font("src/assets/font.ttf", 13).render("A -> DJIKSTRA", True, (0,250,250))
+    rect = text.get_rect(center=(600, 50))
+    text2 = pygame.font.Font("src/assets/font.ttf", 13).render("B -> BFS", True, (0,250,250))
+    rect2 = text.get_rect(center=(600, 75))
+    text3 = pygame.font.Font("src/assets/font.ttf", 13).render("R -> MENU", True, (0,250,250))
+    rect3 = text.get_rect(center=(600, 100))
+    screen.blit(text, rect)
+    screen.blit(text2, rect2)
+    screen.blit(text3, rect3)
+
 
 def start():
     init_search = False
     bfs_search = False
+    dfs_search = False
     is_target_set = False
     is_start_set = False
     search = True
@@ -88,6 +105,7 @@ def start():
                     is_target_set = False
                     is_start_set = False
                     bfs_search = False
+                    dfs_search = False
                     search = True
                     cells = []
                     start_cell = None
@@ -97,6 +115,8 @@ def start():
                     init_search = True
                 if event.key == pygame.K_b and is_target_set:
                     bfs_search = True
+                if event.key == pygame.K_c and is_target_set:
+                    dfs_search = True
             elif event.type == pygame.MOUSEMOTION:
                 x = pygame.mouse.get_pos()[0]
                 y = pygame.mouse.get_pos()[1]
@@ -141,22 +161,24 @@ def start():
                     draw_alpha_screen()
                     draw_error_rect_and_text()
 
-        if bfs_search:
-            while len(queue) != 0:
+        elif bfs_search:
+            if len(queue) > 0:
                 cell = queue.pop(0)
+                cell.visited = True
                 for node in cell.neighbours:
                     if node.visited == False and node.walls == False:
                         node.visited = True
                         node.prior = cell
                         queue.append(node)
                     elif node == last_cell:
-                        node.prior = cell
                         current_cell = node.prior
                         while current_cell != last_cell and current_cell != None:
                             path.append(current_cell)
                             current_cell = current_cell.prior
+                        search = False
                         break
 
+        draw_help_box()               
         pygame.display.flip()
 
 
@@ -230,17 +252,12 @@ def controls():
             "Botão direito do mouse -> marca célula alvo", True, "#ff2a9e")
         rect3 = text.get_rect(center=(375, 450))
         text4 = pygame.font.Font(
-            "src/assets/font.ttf", 19).render("A para rodar o algoritmo", True, "#33ffb8")
+            "src/assets/font.ttf", 19).render("R para retornar ao menu", True, "#33ffb8")
         rect4 = text.get_rect(center=(450, 550))
-        text5 = pygame.font.Font(
-            "src/assets/font.ttf", 19).render("R para retornar ao menu", True, "#33ff5b")
-        rect5 = text.get_rect(center=(450, 650))
-
         screen.blit(text, rect)
         screen.blit(text2, rect2)
         screen.blit(text3, rect3)
         screen.blit(text4, rect4)
-        screen.blit(text5, rect5)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
