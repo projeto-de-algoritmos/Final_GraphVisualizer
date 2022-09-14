@@ -177,6 +177,10 @@ def start():
                             current_cell = current_cell.prior
                         search = False
                         break
+            else:
+                if search:
+                    draw_alpha_screen()
+                    draw_error_rect_and_text()
 
         draw_help_box()               
         pygame.display.flip()
